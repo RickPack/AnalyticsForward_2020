@@ -203,3 +203,9 @@ After installing R and R-Studio, fork this repo by clicking fork at the top-righ
      
 ## More images
 Plenty of #AnalyticsForward images are available on Twitter and LinkedIn via #AnalyticsForward as well as this Facebook album: (http://bit.ly/2O126hX)
+
+## Platinum Sponsors of A>F 2020
+![AF2020 Platinum Sponsors](AF2020_PlatinumSponsors.png)
+
+## Where again can I register?
+http://bit.ly/AF2020Signup

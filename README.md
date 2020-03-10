@@ -77,7 +77,7 @@ Highest Performing Days (Registrations)
 Total Registrations for Analytics&gt;Forward per year
 -----------------------------------------------------
 
-    ## [1] "As of  2020-03-10 08:08:52"
+    ## [1] "As of  2020-03-10 08:38:46"
 
 | name                                                                  |  Year|  Total\_Registrations|
 |:----------------------------------------------------------------------|-----:|---------------------:|
@@ -124,3 +124,13 @@ More images
 -----------
 
 Plenty of \#AnalyticsForward images are available on Twitter and LinkedIn via \#AnalyticsForward as well as this Facebook album: (<http://bit.ly/2O126hX>)
+
+Platinum Sponsors of A&gt;F 2020
+--------------------------------
+
+![AF2020 Platinum Sponsors](AF2020_PlatinumSponsors.png)
+
+Where again can I register?
+---------------------------
+
+<http://bit.ly/AF2020Signup>
