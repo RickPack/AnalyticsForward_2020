@@ -30,10 +30,10 @@ Meetup_RSVP_Yes_Count <- function(save_to_folder = TRUE,
   ## Notice need for raw.
   github_filename1 <- stringr::str_glue(
     'https://raw.githubusercontent.com/RickPack/Analytics',
-    'Forward_2019/master/AnalyticsForward_Registrations.csv')
+    'Forward_2020/master/AnalyticsForward_Registrations.csv')
   github_filename2 <- stringr::str_glue(
     'https://raw.githubusercontent.com/RickPack/Analytics',
-    'Forward_2019/master/AnalyticsForward_Reg_DayofWeek.csv')
+    'Forward_2020/master/AnalyticsForward_Reg_DayofWeek.csv')
   
   relative_day_graph_helper <- function(){
     # Get the RSVP yes count as of the latest day of the most recent event
@@ -139,7 +139,7 @@ Meetup_RSVP_Yes_Count <- function(save_to_folder = TRUE,
     allRTA_events_future_func <- function(){
       tryCatch(
         {
-          future_events <- get_events(meetupgrp_name)
+          future_events <- get_events(meetupgrp_name, "upcoming")
           # return(future_events)
         },
         error = function(cond){
@@ -154,6 +154,7 @@ Meetup_RSVP_Yes_Count <- function(save_to_folder = TRUE,
     }
     allRTA_events_future <- allRTA_events_future_func()
     
+    browser()
     
     allRTA_events_past   <- get_events(meetupgrp_name, "past")
     allRTA_events        <- rbind(allRTA_events_future, allRTA_events_past)
@@ -177,7 +178,7 @@ Meetup_RSVP_Yes_Count <- function(save_to_folder = TRUE,
       mutate(event_date = ymd(event_date),
              yes_year = lubridate::year(event_date))
     
-    allAF_frm_dt_all <- bind_rows(AF19_dt, AF18_dt, AF17_dt, AF16_dt, AF15_dt) %>% 
+    allAF_frm_dt_all <- bind_rows(AF20_dt, AF19_dt, AF18_dt, AF17_dt, AF16_dt, AF15_dt) %>% 
       left_join(., AF_events_dates_yes) %>%
       mutate(days_to_event = event_date - dates_yes)
     
@@ -338,6 +339,7 @@ Meetup_RSVP_Yes_Count <- function(save_to_folder = TRUE,
   assign("allAF_frm", allAF_frm, envir = .GlobalEnv)
   assign("today_days_to_event", today_days_to_event, envir = .GlobalEnv)
   assign("rel_obj", rel_obj, envir = .GlobalEnv)
+  assign("max_registrations", max_registrations, envir = .GlobalEnv)
   
   p1 <- 
     ggplot(data = allAF_frm,
@@ -345,14 +347,14 @@ Meetup_RSVP_Yes_Count <- function(save_to_folder = TRUE,
                y = dates_yes_cumsum,
                colour = yes_year_factor)) +
     geom_line(size = 2) +
-    ggforce::geom_mark_ellipse(aes(filter = yes_year_factor == max_yes_year, 
-                                   colour = yes_year_factor, label = yes_year_factor),
-                               expand = unit(0.02, 'mm'),
-                               label.colour = "#fc8d62",
-                               label.fontsize = 16, label.fill = "black",
-                               label.buffer = unit(1, 'mm'),
-                               con.colour = "white", con.size = 0.3,
-                               con.type = "elbow") +
+    # ggforce::geom_mark_ellipse(aes(filter = yes_year_factor == max_yes_year, 
+    #                                colour = yes_year_factor, label = yes_year_factor),
+    #                            expand = unit(0.02, 'mm'),
+    #                            label.colour = "#fc8d62",
+    #                            label.fontsize = 16, label.fill = "black",
+    #                            label.buffer = unit(1, 'mm'),
+    #                            con.colour = "white", con.size = 0.3,
+    #                            con.type = "elbow") +
     ggforce::geom_link(aes(x = min(allAF_frm$dates_yes_otheryear),
                            xend = max(allAF_frm$dates_yes_otheryear),
                            y = max_registrations,
@@ -366,11 +368,12 @@ Meetup_RSVP_Yes_Count <- function(save_to_folder = TRUE,
     ylab("YES (will attend) RSVPs from Meetup.com API") +
     ggtitle(label = str_glue("Registrations for Research Triangle Analysts 'Analytics>Forward'\n",
                              "March 14, 2020 at NC State (SAS Hall)"),
-            subtitle = str_glue("Keynote by Dr. Rob Erhardt (Wake Forest)\n",
-                                "'Adding Value through Climate Data Science'\n",
-                                "(Being 'Right' Isn't Always Good Enough)\n",
-                                "Data as of ", as.character(Sys.time()), ": ",
-                                as.numeric(today_days_to_event), " days remaining\nhttp://bit.ly/AF2020Signup")) +
+            subtitle = str_glue("Climate Data Keynote by Dr. Robert Erhardt (Wake Forest)\n",
+                                "Engaging the Hard Data of a Lightning-Rod Issue",
+                                #"Data as of ", as.character(Sys.time()), ": ",
+                                #as.numeric(today_days_to_event), " days remaining",
+                                "\nhttp://bit.ly/AF2020Signup")
+                                ) +
     directlabels::geom_dl(aes(label = yes_year), 
                           method = list("last.points", rot = -50, cex = 2)) +
     theme(plot.title = element_text(hjust = 0.5, color = '#EEEEEE',
@@ -398,4 +401,62 @@ Meetup_RSVP_Yes_Count <- function(save_to_folder = TRUE,
     NULL
   
   print(p1)
+  
+  p2 <- 
+    ggplot(data = allAF_frm,
+           aes(x = as.numeric(days_to_event),
+               y = dates_yes_cumsum,
+               colour = yes_year_factor)) +
+    geom_line(size = 2) +
+    # ggforce::geom_mark_ellipse(aes(filter = yes_year_factor == max_yes_year, 
+    #                                colour = yes_year_factor, label = yes_year_factor),
+    #                            expand = unit(0.02, 'mm'),
+    #                            label.colour = "#fc8d62",
+    #                            label.fontsize = 16, label.fill = "black",
+    #                            label.buffer = unit(1, 'mm'),
+    #                            con.colour = "white", con.size = 0.3,
+    #                            con.type = "elbow") +
+    ggforce::geom_link(aes(x = min(allAF_frm$days_to_event),
+                           xend = max(allAF_frm$days_to_event),
+                           y = max_registrations,
+                           yend = max_registrations),
+                       color = "white",
+                       size = 1
+    ) +
+    xlab("Days to Event") +
+    ylab("YES (will attend) RSVPs") +
+    labs(colour = "Year") + 
+    ggtitle(label = str_glue("Registrations for Research Triangle Analysts 'Analytics>Forward'\n",
+                             "March 14, 2020 at NC State (SAS Hall)"),
+            subtitle = str_glue("Keynote by Dr. Robert Erhardt: Climate Data (Actuarial Science)\n",
+                                "Data as of ", as.character(Sys.time()), ": ",
+                                as.numeric(today_days_to_event), " days remaining\nChart 2 of 7")) +
+    scale_x_reverse() +
+    directlabels::geom_dl(aes(label = yes_year), 
+                          method = list("last.points", rot = -50, cex = 2)) +
+    theme(plot.title = element_text(hjust = 0.5, color = '#EEEEEE',
+                                    lineheight = .8, face = "bold",
+                                    size = 26),
+          plot.subtitle = element_text(hjust = 0.5, color = '#EEEEEE',
+                                       size = 20),
+          axis.text.x = element_text(face = "bold.italic", color = "#EEEEEE", size = 11),
+          axis.text.y = element_text(face = "bold.italic", color = "#EEEEEE", size = 11),
+          legend.position = "none",
+          text = element_text(size = 13, color = '#EEEEEE'),
+          panel.background = element_rect(fill = '#333333'),
+          plot.background = element_rect(fill = '#333333'),
+          panel.grid = element_blank(),
+          legend.background = element_blank(),
+          legend.key = element_blank()) +
+    labs(colour = "Year") + 
+    # http://colorbrewer2.org/#type=qualitative&scheme=Set2&n=5
+    scale_colour_manual(values = c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854","#ffffff")) +
+    geom_text(inherit.aes = FALSE, color = "white",
+              aes(x = min(allAF_frm$days_to_event) + 10, 
+                  y = max_registrations + 10,
+                  label = paste0("Record registrations = ", max_registrations)),
+              size = 08) +
+    NULL
+  
+  print(p2)
 }
